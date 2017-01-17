@@ -27,19 +27,18 @@ static NSString *GET = @"GET";
 
 /**
  网络请求
-
+ 
  @param method HTTP方法,POST\GET
  @param URLString url字符
  @param parameters 参数
  @param success 成功回调
  @param failure 失败回调
- @return NSURLSessionDataTask对象，一般无用
  */
-- (NSURLSessionDataTask *)dataTaskWithHTTPMethod:(NSString *)method
-                                       URLString:(NSString *)URLString
-                                      parameters:(id)parameters
-                                         success:(void (^)(NSURLSessionDataTask *, id))success
-                                         failure:(void (^)(NSURLSessionDataTask *, NSError *))failure;
+- (void)requestWithHTTPMethod:(NSString *)method
+                    URLString:(NSString *)URLString
+                   parameters:(id)parameters
+                      success:(void (^)(NSURLSessionDataTask *, id))success
+                      failure:(void (^)(NSURLSessionDataTask *, NSError *))failure;
 
 /**
  取消当前正在进行的网络请求

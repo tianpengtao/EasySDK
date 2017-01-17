@@ -10,4 +10,6 @@
 #define EasySDK_h
 #import "ESNetworkingManager.h"
 #import "ESDbManager.h"
+#import "DialogManager.h"
+#import "DeviceInfo.h"
 #endif /* EasySDK_h */

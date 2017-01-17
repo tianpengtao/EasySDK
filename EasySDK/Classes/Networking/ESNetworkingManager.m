@@ -45,37 +45,54 @@
   [_session invalidateAndCancel];
 }
 
-- (NSURLSessionDataTask *)dataTaskWithHTTPMethod:(NSString *)method
-                                       URLString:(NSString *)URLString
-                                      parameters:(id)parameters
-                                         success:(void (^)(NSURLSessionDataTask *, id))success
-                                         failure:(void (^)(NSURLSessionDataTask *, NSError *))failure
+/**
+ 网络请求
+ 
+ @param method HTTP方法,POST\GET
+ @param URLString url字符
+ @param parameters 参数
+ @param success 成功回调
+ @param failure 失败回调
+ */
+- (void)requestWithHTTPMethod:(NSString *)method
+                    URLString:(NSString *)URLString
+                   parameters:(id)parameters
+                      success:(void (^)(NSURLSessionDataTask *, id))success
+                      failure:(void (^)(NSURLSessionDataTask *, NSError *))failure
 {
   NSURLRequest *urlRequest=[self configURLRequestWithHTTPMethod:method URLString:URLString parameters:parameters];
   NSURLSessionDataTask * dataTask = [self.session dataTaskWithRequest:urlRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
     if (error) {
       failure(dataTask,error);
     }else{
-      success(dataTask,data);
+      id result =[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+      if (result)
+      {
+        success(dataTask,result);
+      }
+      else
+      {
+        success(dataTask,data);
+      }
     }
   }];
   [dataTask resume];
-  return dataTask;
 }
 
+//生成urlRequest
 - (NSURLRequest*)configURLRequestWithHTTPMethod:(NSString *)method
                                      URLString:(NSString *)URLString
                                     parameters:(id)parameters
 {
   NSMutableURLRequest *urlRequest=[[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:URLString] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:_timeout];
   [urlRequest setHTTPMethod:method];
-    [urlRequest setValue:@"application/x-www-form-urlencoded"
-      forHTTPHeaderField:@"Content-Type"];
-    NSMutableDictionary *parameterDic=[[NSMutableDictionary alloc] init];
-    [parameterDic setDictionary:_baseParameter];
-    [parameterDic setDictionary:parameters];
-    NSString *query=[self handleParameter:parameterDic];
-//    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:parameters options:NSJSONWritingPrettyPrinted error:&error];
+  [urlRequest setValue:@"application/x-www-form-urlencoded"
+    forHTTPHeaderField:@"Content-Type"];
+  NSMutableDictionary *parameterDic=[[NSMutableDictionary alloc] init];
+  [parameterDic setDictionary:_baseParameter];
+  [parameterDic setDictionary:parameters];
+  NSString *query=[self handleParameter:parameterDic];
+  
   if ([method isEqualToString:POST])
   {
     NSData *queryData=[query dataUsingEncoding:NSUTF8StringEncoding];
@@ -87,6 +104,8 @@
   }
   return urlRequest;
 }
+
+//GET请求参数处理
 - (NSString*)handleParameter:(NSDictionary*)parameters
 {
   NSMutableString *parametersStr=[[NSMutableString alloc] init];
@@ -98,7 +117,8 @@
   }
   return nil;
 }
-#pragma mark - NSURLSessionDelegate
+
+#pragma mark - 安全验证
 - (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
  completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * __nullable credential))completionHandler
 {
