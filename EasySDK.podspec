@@ -41,5 +41,6 @@ TODO: Add long description of the pod here.
   # s.frameworks = 'UIKit', 'MapKit'
   s.dependency 'FMDB'
   s.dependency 'MBProgressHUD', '~> 1.0.0'
+  s.dependency 'HHRouter', '0.1.9'
   s.requires_arc = true
 end

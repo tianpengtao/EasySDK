@@ -15,6 +15,8 @@
 }
 + (void)load
 {
+  
+ 
   SEL viewWillAppearSel = @selector(viewWillAppear:);
   SEL es_viewWillAppearSel = @selector(es_viewWillAppear:);
   [self swizzleMethods:[self class] originalSelector:viewWillAppearSel swizzledSelector:es_viewWillAppearSel];
